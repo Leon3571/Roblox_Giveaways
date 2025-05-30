@@ -1,1 +1,1 @@
-Website für unseren Discord Server
+Unsere Website wird aktuell umgebaut. Seit gespannt auf neue Funktionen😍
