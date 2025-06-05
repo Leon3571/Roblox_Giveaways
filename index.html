@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giveaway Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        body { background-color: #1a1a1a; color: #fff; font-family: 'Arial', sans-serif; }
+        .fade-in { opacity: 0; transform: translateY(20px); }
+        .hamburger { cursor: pointer; }
+        .menu { display: none; }
+        .menu.active { display: block; }
+        .card { background: #2a2a2a; padding: 20px; border-radius: 10px; margin: 10px 0; }
+        #admin-section { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Menü -->
+    <nav class="p-4 flex justify-between items-center">
+        <div class="hamburger">☰</div>
+        <div class="menu">
+            <a href="#home" class="block p-2 hover:text-blue-500">Home</a>
+            <a href="#winners" class="block p-2 hover:text-blue-500">Gewinner</a>
+            <a href="#giveaway" class="block p-2 hover:text-blue-500">Giveaway</a>
+        </div>
+    </nav>
+
+    <!-- Hauptinhalt -->
+    <section id="home" class="text-center py-10">
+        <h1 class="text-4xl font-bold fade-in">Willkommen zu unserem Giveaway!</h1>
+        <a href="https://discord.gg/YOUR_DISCORD_LINK" target="_blank" class="mt-4 inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 fade-in">Zum Discord</a>
+    </section>
+
+    <section id="winners" class="py-10 px-4">
+        <h2 class="text-2xl font-bold text-center fade-in">Vergangene Gewinner</h2>
+        <div id="winners-list" class="max-w-4xl mx-auto"></div>
+    </section>
+
+    <section id="giveaway" class="py-10 px-4">
+        <h2 class="text-2xl font-bold text-center fade-in">Nächstes Giveaway</h2>
+        <div id="giveaway-info" class="max-w-4xl mx-auto card"></div>
+    </section>
+
+    <!-- Admin-Bereich -->
+    <section id="admin-login" class="py-10 px-4 text-center">
+        <h2 class="text-2xl font-bold">Admin-Zugang</h2>
+        <input type="password" id="admin-pin" placeholder="PIN eingeben" class="p-2 mt-4 rounded text-black">
+        <button onclick="checkAdminPin()" class="mt-4 bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700">Login</button>
+    </section>
+
+    <section id="admin-section" class="py-10 px-4 max-w-4xl mx-auto">
+        <h2 class="text-2xl font-bold">Admin-Verwaltung</h2>
+        <div class="card">
+            <h3>Gewinner hinzufügen</h3>
+            <input type="text" id="winner-name" placeholder="Name" class="p-2 mt-2 rounded text-black">
+            <input type="text" id="winner-date" placeholder="Datum (z.B. 01.01.2025)" class="p-2 mt-2 rounded text-black">
+            <button onclick="addWinner()" class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-full">Hinzufügen</button>
+        </div>
+        <div class="card">
+            <h3>Giveaway bearbeiten</h3>
+            <input type="text" id="giveaway-title" placeholder="Titel" class="p-2 mt-2 rounded text-black">
+            <textarea id="giveaway-desc" placeholder="Beschreibung" class="p-2 mt-2 rounded text-black w-full"></textarea>
+            <input type="text" id="giveaway-date" placeholder="Datum" class="p-2 mt-2 rounded text-black">
+            <button onclick="updateGiveaway()" class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-full">Aktualisieren</button>
+        </div>
+        <div class="card">
+            <h3>Gewinner löschen</h3>
+            <div id="delete-winners-list"></div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
