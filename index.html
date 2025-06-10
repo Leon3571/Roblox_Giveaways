@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giveaway Community</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        .section {
+            padding: 60px 0;
+        }
+        .card {
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        .discord-btn {
+            background-color: #5865F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .discord-btn:hover {
+            background-color: #4752c4;
+            color: white;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .admin-section {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .admin-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .admin-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-4">Willkommen bei unserer Giveaway-Community!</h1>
+            <p class="lead">Nimm teil an spannenden Gewinnspielen und werde Teil unserer Community!</p>
+            <a href="https://discord.gg/your-discord-link" class="discord-btn mt-3">Tritt unserem Discord bei!</a>
+        </div>
+    </section>
+
+    <!-- Admin Login Section -->
+    <section class="section">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h3>Admin-Zugang</h3>
+                <input type="password" id="admin-pin" class="form-control w-25 mx-auto" placeholder="PIN eingeben">
+                <button class="btn btn-primary mt-2" onclick="loginAdmin()">Einloggen</button>
+            </div>
+            <div id="admin-section" class="admin-section">
+                <h4>Admin-Bereich</h4>
+                <button class="btn btn-danger mb-3" onclick="logoutAdmin()">Ausloggen</button>
+                
+                <!-- Ankündigungen verwalten -->
+                <h5>Ankündigungen</h5>
+                <form id="announcement-form" class="mb-3">
+                    <input type="text" id="announcement-title" class="form-control mb-2" placeholder="Titel" required>
+                    <textarea id="announcement-text" class="form-control mb-2" placeholder="Text" required></textarea>
+                    <button type="submit" class="btn btn-success">Hinzufügen</button>
+                </form>
+
+                <!-- Gewinner verwalten -->
+                <h5>Gewinner</h5>
+                <form id="winner-form" class="mb-3">
+                    <input type="text" id="winner-name" class="form-control mb-2" placeholder="Name des Gewinners" required>
+                    <input type="text" id="winner-prize" class="form-control mb-2" placeholder="Gewinn" required>
+                    <button type="submit" class="btn btn-success">Hinzufügen</button>
+                </form>
+
+                <!-- Giveaway verwalten -->
+                <h5>Nächstes Giveaway</h5>
+                <form id="giveaway-form">
+                    <input type="text" id="giveaway-title" class="form-control mb-2" placeholder="Titel" required>
+                    <textarea id="giveaway-text" class="form-control mb-2" placeholder="Beschreibung" required></textarea>
+                    <input type="date" id="giveaway-start" class="form-control mb-2" required>
+                    <input type="date" id="giveaway-end" class="form-control mb-2" required>
+                    <button type="submit" class="btn btn-success">Hinzufügen</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ankündigungen Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center mb-5">Ankündigungen</h2>
+            <div id="announcements" class="row"></div>
+        </div>
+    </section>
+
+    <!-- Aktueller Gewinner Section -->
+    <section class="section bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Aktueller Gewinner</h2>
+            <div id="winner" class="text-center"></div>
+        </div>
+    </section>
+
+    <!-- Nächstes Giveaway Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center mb-5">Nächstes Giveaway</h2>
+            <div id="giveaway" class="row justify-content-center"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 Giveaway Community. Alle Rechte vorbehalten.</p>
+            <a href="https://discord.gg/your-discord-link" class="discord-btn">Tritt unserem Discord bei!</a>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <!-- JavaScript für Admin-Funktionalität -->
+    <script>
+        const ADMIN_PIN = "2009";
+        let isAdmin = false;
+
+        // Daten aus localStorage laden
+        let announcements = JSON.parse(localStorage.getItem('announcements')) || [];
+        let winner = JSON.parse(localStorage.getItem('winner')) || null;
+        let giveaway = JSON.parse(localStorage.getItem('giveaway')) || null;
+
+        // Admin-Login
+        function loginAdmin() {
+            const pin = document.getElementById('admin-pin').value;
+            if (pin === ADMIN_PIN) {
+                isAdmin = true;
+                document.getElementById('admin-section').style.display = 'block';
+                document.getElementById('admin-pin').value = '';
+                alert('Erfolgreich eingeloggt!');
+            } else {
+                alert('Falscher PIN!');
+            }
+        }
+
+        // Admin-Logout
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById('admin-section').style.display = 'none';
+        }
+
+        // Ankündigungen anzeigen
+        function renderAnnouncements() {
+            const announcementsDiv = document.getElementById('announcements');
+            announcementsDiv.innerHTML = '';
+            announcements.forEach((ann, index) => {
+                const card = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">${ann.title}</h5>
+                                <p class="card-text">${ann.text}</p>
+                                <p class="text-muted">Veröffentlicht: ${new Date().toLocaleDateString('de-DE')}</p>
+                                ${isAdmin ? `<button class="admin-btn" onclick="deleteAnnouncement(${index})">Löschen</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                announcementsDiv.innerHTML += card;
+            });
+        }
+
+        // Gewinner anzeigen
+        function renderWinner() {
+            const winnerDiv = document.getElementById('winner');
+            if (winner) {
+                winnerDiv.innerHTML = `
+                    <h3>Herzlichen Glückwunsch, <strong>${winner.name}</strong>!</h3>
+                    <p>${winner.name} hat unser letztes Giveaway gewonnen und erhält ${winner.prize}!</p>
+                    <p class="text-muted">Gewinnspiel beendet: ${new Date().toLocaleDateString('de-DE')}</p>
+                    ${isAdmin ? `<button class="admin-btn" onclick="deleteWinner()">Löschen</button>` : ''}
+                `;
+            } else {
+                winnerDiv.innerHTML = '<p>Kein Gewinner vorhanden.</p>';
+            }
+        }
+
+        // Giveaway anzeigen
+        function renderGiveaway() {
+            const giveawayDiv = document.getElementById('giveaway');
+            if (giveaway) {
+                giveawayDiv.innerHTML = `
+                    <div class="col-md-6">
+                        <div class="card shadow-sm text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">${giveaway.title}</h5>
+                                <p class="card-text">${giveaway.text}</p>
+                                <p><strong>Start: ${new Date(giveaway.start).toLocaleDateString('de-DE')}</strong></p>
+                                <p><strong>Ende: ${new Date(giveaway.end).toLocaleDateString('de-DE')}</strong></p>
+                                <a href="https://discord.gg/your-discord-link" class="discord-btn">Jetzt teilnehmen!</a>
+                                ${isAdmin ? `<button class="admin-btn mt-2" onclick="deleteGiveaway()">Löschen</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                giveawayDiv.innerHTML = '<p class="text-center">Kein Giveaway geplant.</p>';
+            }
+        }
+
+        // Ankündigung hinzufügen
+        document.getElementById('announcement-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!isAdmin) return;
+            const title = document.getElementById('announcement-title').value;
+            const text = document.getElementById('announcement-text').value;
+            announcements.push({ title, text });
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+            renderAnnouncements();
+            e.target.reset();
+        });
+
+        // Gewinner hinzufügen
+        document.getElementById('winner-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!isAdmin) return;
+            const name = document.getElementById('winner-name').value;
+            const prize = document.getElementById('winner-prize').value;
+            winner = { name, prize };
+            localStorage.setItem('winner', JSON.stringify(winner));
+            renderWinner();
+            e.target.reset();
+        });
+
+        // Giveaway hinzufügen
+        document.getElementById('giveaway-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!isAdmin) return;
+            const title = document.getElementById('giveaway-title').value;
+            const text = document.getElementById('giveaway-text').value;
+            const start = document.getElementById('giveaway-start').value;
+            const end = document.getElementById('giveaway-end').value;
+            giveaway = { title, text, start, end };
+            localStorage.setItem('giveaway', JSON.stringify(giveaway));
+            renderGiveaway();
+            e.target.reset();
+        });
+
+        // Ankündigung löschen
+        function deleteAnnouncement(index) {
+            announcements.splice(index, 1);
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+            renderAnnouncements();
+        }
+
+        // Gewinner löschen
+        function deleteWinner() {
+            winner = null;
+            localStorage.removeItem('winner');
+            renderWinner();
+        }
+
+        // Giveaway löschen
+        function deleteGiveaway() {
+            giveaway = null;
+            localStorage.removeItem('giveaway');
+            renderGiveaway();
+        }
+
+        // Initiales Rendern
+        renderAnnouncements();
+        renderWinner();
+        renderGiveaway();
+    </script>
+</body>
+</html>
